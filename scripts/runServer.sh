@@ -8,8 +8,8 @@ while true; do
     # uwsgi --socket uwsgi.sock --chmod-socket=666 --enable-threads --workers $NUM_WORKERS --module app.wsgi > >(tee -a logs/log_server_$(date '+%Y-%m-%d-%H').txt) 2> >(tee -a logs/log_server_$(date '+%Y-%m-%d-%H').txt >&2)
     # uwsgi --ini config/uwsgi/uwsgi_dev.ini --honour-stdin > >(tee -a logs/log_server_$(date '+%Y-%m-%d-%H').txt) 2> >(tee -a logs/log_server_$(date '+%Y-%m-%d-%H').txt >&2)
     # gunicorn app.wsgi
-    # gunicorn --config config/uwsgi/uwsgi.py
-    python manage.py runserver
+    gunicorn --config config/uwsgi/uwsgi.py
+    # python manage.py runserver
 
     echo "Server running."
 

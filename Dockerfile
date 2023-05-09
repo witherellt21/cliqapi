@@ -15,5 +15,5 @@ EXPOSE 81 444 8002
 COPY requirements.txt /app/
 RUN pip install -r /app/requirements.txt
 
-COPY . /app
+COPY . /app/
 RUN chmod +x /app/scripts/runServer.sh

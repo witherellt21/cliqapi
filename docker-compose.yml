@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  server:
+    build:
+      context: .
+    command: bash -c "./scripts/runServer.sh"
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    container_name: cliq_app_server
+
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+    restart: on-failure

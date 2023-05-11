@@ -4,7 +4,7 @@ services:
   server:
     build:
       context: .
-    command: bash -c "./scripts/runServer.sh"
+    command: bash -c "./scripts/setupServer.sh && ./scripts/runServer.sh"
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     container_name: cliq_app_server

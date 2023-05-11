@@ -16,7 +16,7 @@ def get_health():
 
 
 def list_movies():
-    endpoint = f"{API_ROOT}/movie"
+    endpoint = f"{API_ROOT}/movies"
     response = requests.get(endpoint)
     return response
 
@@ -26,8 +26,8 @@ if __name__ == "__main__":
 
     pp = PrettyPrinter(depth=10)
 
-    health = get_health()
-    pp.pprint(health.json())
+    # health = get_health()
+    # pp.pprint(health.json())
 
-    # movie = list_movies()
-    # pp.pprint(movie.json())
+    movie = list_movies()
+    pp.pprint(movie.json())

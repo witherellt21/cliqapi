@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -128,7 +130,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": True,
+    "disable_existing_loggers": False,
     "formatters": {
         "main_formatter": {
             "format": "{asctime} - {levelname} - {process} - {message}",
@@ -141,7 +143,7 @@ LOGGING = {
             "formatter": "main_formatter",
         },
         "file": {
-            "class": "app.logger.CustomConcurrentRotatingFileHandler",
+            "class": "app.logger.DatetimeNamedConcurrentRotatingFileHandler",
             "filename": os.path.join("logs", env("LOG_FILENAME")),
             "maxBytes": 20000000,
             "backupCount": 10,

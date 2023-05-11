@@ -1,6 +1,23 @@
 version: '3.9'
 
 services:
+
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_NAME=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PWD}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    container_name: cliq_app_db
+
   server:
     build:
       context: .

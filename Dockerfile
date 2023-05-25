@@ -16,9 +16,3 @@ COPY requirements.txt /app/
 RUN pip install -r /app/requirements.txt
 
 COPY . /app
-
-# RUN chmod +x /app/scripts/
-RUN chmod +x /app/scripts/runServer.sh
-# CMD scripts/runServer.sh
-# RUN chmod +x ./scripts/runServer.sh
-# RUN chmod +x /app/scripts/setupServer.sh

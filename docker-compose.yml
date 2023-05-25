@@ -21,12 +21,12 @@ services:
   server:
     build:
       context: .
-    command: bash -c "./scripts/setupServer.sh && ./scripts/runServer.sh"
+    command: bash -c "/app/scripts/setupServer.sh && chmod +x /app/scripts/runServer.sh && /app/scripts/runServer.sh"
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     container_name: cliq_app_server
 
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
+    depends_on:
+      db:
+        condition: service_healthy
     restart: on-failure

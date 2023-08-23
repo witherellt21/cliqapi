@@ -1,0 +1,173 @@
+version: 2.1
+
+
+parameters:
+  PUSH_FEATURE_TO_ECR:
+    type: boolean
+    default: false
+
+orbs:
+  aws-ecr: circleci/aws-ecr@8.1.0 # needs version 2.1
+  aws-cli: circleci/aws-cli@3.1
+
+alias:
+  - &test_only_branches
+    filters:
+      branches:
+        ignore:
+          - dev
+          - staging
+          - prod
+  - &push_container_only_branches
+    filters:
+      branches:
+        only:
+          - staging
+          - prod
+  - &deploy_int_only_branches
+    filters:
+      branches:
+        only:
+          - dev
+download_app_env: &download_app_env
+  name: Download .env from ASM
+  command: |
+    # Save the .env from AWS secret manager
+    aws secretsmanager get-secret-value --secret-id ${ASM_ENV_SECRET_ID} | jq -r '.SecretString' > .env
+    # aws secretsmanager get-secret-value --secret-id "arn:aws:secretsmanager:us-east-1:784866354136:secret:Taylors-dev-env-V72GN6"
+
+jobs:
+  run_tests:
+    working_directory: ~/app
+    executor: aws-cli/default
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+          docker_layer_caching: true
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          <<: *download_app_env
+      - run:
+          name: Start docker containers and test
+          command: |
+            echo << pipeline.parameters.PUSH_FEATURE_TO_ECR >>
+            docker-compose up --build -d
+            
+      - run:
+          name: Run tests
+          command: |
+            echo "TODO: run test commands here"
+
+            
+  push_container_image:
+    docker:
+      - image: cimg/python:3.10
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          <<: *download_app_env
+      - run:
+          name: Build and push docker image
+          command: |
+            # Log into ECR
+            export REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+            aws ecr get-login-password  | docker login --username AWS --password-stdin ${REGISTRY}
+
+            # Build docker and push to ECR
+            export TAG=${REGISTRY}/${ECR_REPO_NAME}:<<pipeline.git.revision>>  # If this is the first time, need to create the ECR repository first
+            docker build -f Dockerfile -t ${TAG} .
+            docker push ${TAG}
+
+  deploy:
+    docker:
+      - image: cimg/python:3.10
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          <<: *download_app_env
+      - run:
+          name: Deploy by updating the Kubernetes configmap on the ___-deploy repo
+          command: |
+            echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
+
+
+workflows:
+  version: 2
+  run_tests_only:
+    when:
+      and: 
+        - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+    jobs:
+      - run_tests:
+          <<: *test_only_branches
+          context:
+            - bloop
+            - infra-core
+
+  push_feature_branch:
+    when:
+      and: 
+        - equal: [ true, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+    jobs:
+      - push_container_image:
+          <<: *test_only_branches
+          context:
+            - bloop
+            - infra-core
+          requires:
+            - run_tests
+        
+
+  push_container:
+    jobs:
+      - run_tests:
+          <<: *push_container_only_branches
+          context:
+            - bloop
+            - infra-core
+            
+      - push_container_image:
+          <<: *push_container_only_branches
+          context:
+            - bloop
+            - infra-core
+          requires:
+            - run_tests
+
+
+  deploy_int:
+    jobs:
+      - run_tests:
+          <<: *deploy_int_only_branches
+          context:
+            - bloop
+            - infra-core
+
+      - push_container_image:
+          <<: *deploy_int_only_branches
+          context:
+            - bloop
+            - infra-core
+          requires:
+            - run_tests
+
+      - deploy:
+          <<: *deploy_int_only_branches
+          context:
+            - bloop
+            - infra-core
+          requires:
+            - push_container_image

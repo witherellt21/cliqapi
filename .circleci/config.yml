@@ -130,30 +130,30 @@ workflows:
   #           - run_tests
         
 
-  push_container:
-    jobs:
-      - run_tests:
-          <<: *push_container_only_branches
+  # push_container:
+  #   jobs:
+  #     - run_tests:
+  #         <<: *push_container_only_branches
             
-      - push_container_image:
-          <<: *push_container_only_branches
+  #     - push_container_image:
+  #         <<: *push_container_only_branches
 
-          requires:
-            - run_tests
+  #         requires:
+  #           - run_tests
 
 
-  deploy_int:
-    jobs:
-      - run_tests:
-          <<: *deploy_int_only_branches
+  # deploy_int:
+  #   jobs:
+  #     - run_tests:
+  #         <<: *deploy_int_only_branches
 
-      - push_container_image:
-          <<: *deploy_int_only_branches
-          requires:
-            - run_tests
+  #     - push_container_image:
+  #         <<: *deploy_int_only_branches
+  #         requires:
+  #           - run_tests
 
-      - deploy:
-          <<: *deploy_int_only_branches
+  #     - deploy:
+  #         <<: *deploy_int_only_branches
 
-          requires:
-            - push_container_image
+  #         requires:
+  #           - push_container_image

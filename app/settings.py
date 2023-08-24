@@ -88,17 +88,17 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        # "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        # "ENGINE": "django.db.backends.postgresql",
         "USER": env("DB_USER"),
         "PASSWORD": env("DB_PWD"),
         "NAME": env("DB_NAME"),
         "HOST": env("DB_HOST"),
         "PORT": int(env("DB_PORT").strip('"')),
-        # "CONN_MAX_AGE": 0,
-        # "TEST": {
-        #     "DEPENDENCIES": [],
-        # },
+        "CONN_MAX_AGE": 0,
+        "TEST": {
+            "DEPENDENCIES": [],
+        },
     },
 }
 

@@ -1,6 +1,5 @@
 version: 2.1
 
-
 parameters:
   PUSH_FEATURE_TO_ECR:
     type: boolean
@@ -15,10 +14,8 @@ alias:
     filters:
       branches:
         ignore:
-          - dev
           - staging
           - prod
-          - main
   - &push_container_only_branches
     filters:
       branches:
@@ -29,7 +26,7 @@ alias:
     filters:
       branches:
         only:
-          - dev
+          - prod
 download_app_env: &download_app_env
   name: Download .env from ASM
   command: |
@@ -108,16 +105,17 @@ jobs:
   #         command: |
   #           echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
 
-
-workflows:
-  version: 2
-    run_tests_only:
       # when:
       #   and: 
       #     - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
-      jobs:
-        - run_tests:
-            <<: *test_only_branches
+
+workflows:
+  version: 2
+  run_tests_only:
+    jobs:
+      - run_tests:
+          <<: *test_only_branches
+  
 
   # push_feature_branch:
   #   when:

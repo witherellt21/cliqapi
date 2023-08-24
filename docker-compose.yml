@@ -21,7 +21,7 @@ services:
   server:
     build:
       context: .
-    command: bash -c "/app/scripts/setupServer.sh && chmod +x /app/scripts/runServer.sh && /app/scripts/runServer.sh"
+    command: bash -c "scripts/setupServer.sh && chmod +x scripts/runServer.sh && scripts/runServer.sh"
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     container_name: cliq_app_server

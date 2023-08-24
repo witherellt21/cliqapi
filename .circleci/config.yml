@@ -57,13 +57,14 @@ jobs:
           command: |
             echo << pipeline.parameters.PUSH_FEATURE_TO_ECR >>
             docker-compose up --build -d
+            docker-compose exec server pytest
             # docker build .
             
       - run:
           name: Run tests
           command: |
             echo "TODO: run test commands here"
-            docker exec -it cliq_app_server pytest
+            # docker exec cliq_app_server pytest
 
             
   # push_container_image:

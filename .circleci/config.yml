@@ -46,12 +46,12 @@ jobs:
       - setup_remote_docker:
           version: 20.10.11
           docker_layer_caching: true
-      - aws-cli/setup:
+      - aws-cli/role_arn_setup:
           profile-name: "cliqapi"
-          role-arn: arn:aws:iam::339446723100:role/admin
-          region: ${AWS_REGION_NAME}
-          role-session-name: "example-session"
-          session-duration: "1800"
+          role-arn: "arn:aws:iam::339446723100:role/admin"
+          # region: ${AWS_REGION_NAME}
+          # role-session-name: "example-session"
+          # session-duration: "1800"
       - run:
           <<: *download_app_env
       - run:

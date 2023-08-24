@@ -112,9 +112,9 @@ jobs:
 workflows:
   version: 2
   run_tests_only:
-    when:
-      and: 
-        - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+    # when:
+    #   and: 
+    #     - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
     jobs:
       - run_tests:
           <<: *test_only_branches

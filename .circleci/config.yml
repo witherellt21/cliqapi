@@ -48,7 +48,7 @@ jobs:
           docker_layer_caching: true
       - aws-cli/setup:
           profile-name: "cliqapi"
-          role-arn: "arn:aws:iam::339446723100:role/admin"
+          role-arn: arn:aws:iam::339446723100:role/admin
           region: ${AWS_REGION_NAME}
           role-session-name: "example-session"
           session-duration: "1800"

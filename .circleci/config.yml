@@ -56,7 +56,8 @@ jobs:
           name: Start docker containers and test
           command: |
             echo << pipeline.parameters.PUSH_FEATURE_TO_ECR >>
-            docker-compose up --build -d
+            # docker-compose up --build -d
+            docker build .
             
       - run:
           name: Run tests

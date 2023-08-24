@@ -118,16 +118,16 @@ workflows:
       - run_tests:
           <<: *test_only_branches
 
-  push_feature_branch:
-    when:
-      and: 
-        - equal: [ true, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
-    jobs:
-      - push_container_image:
-          <<: *test_only_branches
+  # push_feature_branch:
+  #   when:
+  #     and: 
+  #       - equal: [ true, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+  #   jobs:
+  #     - push_container_image:
+  #         <<: *test_only_branches
 
-          requires:
-            - run_tests
+  #         requires:
+  #           - run_tests
         
 
   push_container:

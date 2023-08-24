@@ -8,15 +8,19 @@ services:
       - POSTGRES_NAME=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PWD}
+    expose:
+      - "5433" # Publishes 5433 to other containers but NOT to host machine
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "5433:5432"
     restart: on-failure
+    # command: bash -c "echo ${DB_NAME}"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 5s
       timeout: 5s
       retries: 5
     container_name: cliq_app_db
+    # command: -p 5433
 
   server:
     build:

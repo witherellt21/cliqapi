@@ -8,7 +8,7 @@ parameters:
 
 orbs:
   aws-ecr: circleci/aws-ecr@8.1.0 # needs version 2.1
-  aws-cli: circleci/aws-cli@3.1
+  aws-cli: circleci/aws-cli@4.0
 
 alias:
   - &test_only_branches
@@ -47,7 +47,11 @@ jobs:
           version: 20.10.11
           docker_layer_caching: true
       - aws-cli/setup:
-          profile-name: default
+          profile-name: "cliqapi"
+          prole-arn: "arn:aws:iam::339446723100:role/admin"
+          aws-region: ${AWS_REGION_NAME}
+          role-session-name: "example-session"
+          session-duration: "1800"
       - run:
           <<: *download_app_env
       - run:
@@ -113,9 +117,6 @@ workflows:
     jobs:
       - run_tests:
           <<: *test_only_branches
-          context:
-            - bloop
-            - infra-core
 
   push_feature_branch:
     when:
@@ -124,9 +125,7 @@ workflows:
     jobs:
       - push_container_image:
           <<: *test_only_branches
-          context:
-            - bloop
-            - infra-core
+
           requires:
             - run_tests
         
@@ -135,15 +134,10 @@ workflows:
     jobs:
       - run_tests:
           <<: *push_container_only_branches
-          context:
-            - bloop
-            - infra-core
             
       - push_container_image:
           <<: *push_container_only_branches
-          context:
-            - bloop
-            - infra-core
+
           requires:
             - run_tests
 
@@ -152,22 +146,14 @@ workflows:
     jobs:
       - run_tests:
           <<: *deploy_int_only_branches
-          context:
-            - bloop
-            - infra-core
 
       - push_container_image:
           <<: *deploy_int_only_branches
-          context:
-            - bloop
-            - infra-core
           requires:
             - run_tests
 
       - deploy:
           <<: *deploy_int_only_branches
-          context:
-            - bloop
-            - infra-core
+
           requires:
             - push_container_image

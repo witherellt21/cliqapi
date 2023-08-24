@@ -63,7 +63,7 @@ jobs:
           name: Run tests
           command: |
             echo "TODO: run test commands here"
-            docker exec cliq_app_server pytest
+            docker exec -it cliq_app_server pytest
 
             
   # push_container_image:

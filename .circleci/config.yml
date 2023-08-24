@@ -63,6 +63,7 @@ jobs:
           name: Run tests
           command: |
             echo "TODO: run test commands here"
+            docker exec server pytest
 
             
   # push_container_image:

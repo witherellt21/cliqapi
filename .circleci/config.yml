@@ -49,7 +49,7 @@ jobs:
       - aws-cli/setup:
           profile-name: "cliqapi"
           role-arn: "arn:aws:iam::339446723100:role/admin"
-          aws-region: ${AWS_REGION_NAME}
+          region: ${AWS_REGION_NAME}
           role-session-name: "example-session"
           session-duration: "1800"
       - run:

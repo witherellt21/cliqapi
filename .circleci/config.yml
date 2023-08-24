@@ -18,6 +18,7 @@ alias:
           - dev
           - staging
           - prod
+          - main
   - &push_container_only_branches
     filters:
       branches:
@@ -116,7 +117,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
     jobs:
       - run_tests:
-          # <<: *test_only_branches
+          <<: *test_only_branches
 
   # push_feature_branch:
   #   when:

@@ -45,11 +45,11 @@ jobs:
           version: 20.10.11
           docker_layer_caching: true
       - aws-cli/setup:
-          profile_name: "cliqapi"
-          role_arn: "arn:aws:iam::339446723100:role/admin"
-          region: ${AWS_REGION_NAME}
-          role_session_name: "example-session"
-          session_duration: "1800"
+          profile_name: "default"
+          # role_arn: "arn:aws:iam::339446723100:role/admin"
+          # region: ${AWS_REGION_NAME}
+          # role_session_name: "example-session"
+          # session_duration: "1800"
       - run:
           <<: *download_app_env
       - run:

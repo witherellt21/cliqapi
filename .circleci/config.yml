@@ -38,6 +38,7 @@ jobs:
   run_tests:
     working_directory: ~/app
     executor: aws-cli/default
+    resource_class: medium
 
     steps:
       - checkout
@@ -55,16 +56,16 @@ jobs:
       - run:
           name: Start docker containers and test
           command: |
-            echo << pipeline.parameters.PUSH_FEATURE_TO_ECR >>
+            # echo << pipeline.parameters.PUSH_FEATURE_TO_ECR >>
             docker-compose up --build -d
-            docker-compose exec server pytest
+            # docker-compose exec server pytest
             # docker build .
             
       - run:
           name: Run tests
           command: |
             echo "TODO: run test commands here"
-            # docker exec cliq_app_server pytest
+            docker exec cliq_app_server pytest
 
             
   # push_container_image:

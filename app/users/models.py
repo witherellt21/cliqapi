@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 
 from .managers import UserManager
 
+from django.contrib.auth.models import User, AbstractUser
+
 
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
@@ -16,9 +18,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_("active"), default=True)
     avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
 
+    is_staff = models.BooleanField(
+        _("staff status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+
     objects = UserManager()
 
-    USERNAME_FIELD = _("email")
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:

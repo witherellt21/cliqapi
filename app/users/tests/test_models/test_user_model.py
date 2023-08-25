@@ -2,7 +2,7 @@ import pytest
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .. import user_test_contants as constants
+from .. import constants
 
 from django.core.validators import EMPTY_VALUES
 

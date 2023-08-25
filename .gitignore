@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 container_data/db/
+www/
+www/static

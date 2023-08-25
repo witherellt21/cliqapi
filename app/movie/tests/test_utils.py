@@ -5,7 +5,7 @@ from app.movie import utils
 
 class MovieUtilsTestCase(TestCase):
     def test_get_movie_list_returns_list(self):
-        movie_list = utils.search_movies_by_keyword("Avengers")
+        movie_list = utils.search_utelly_movies_by_keyword("Avengers")
         self.assertIsInstance(movie_list, list)
         self.assertGreater(len(movie_list), 0)
 

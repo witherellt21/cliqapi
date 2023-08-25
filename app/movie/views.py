@@ -8,7 +8,7 @@ from app.movie.serializers import MovieSerializer
 
 logger = logging.getLogger("main")
 
-# Create your views here.
+
 class MovieListCreateAPIView(mixins.DestroyModelMixin, ListCreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
@@ -20,6 +20,6 @@ class MovieListCreateAPIView(mixins.DestroyModelMixin, ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         logger.debug("creating movie")
         return super().create(request, *args, **kwargs)
-    
+
     def delete(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

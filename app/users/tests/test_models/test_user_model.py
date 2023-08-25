@@ -15,10 +15,12 @@ class UserModelTestCase(TestCase):
 
     @pytest.mark.db_check
     def test_view_db_users(self):
+        # print out all users in db
         print(f"All users: {self.User.objects.all()}")
         print(f"Superusers: {self.User.objects.filter(is_superuser=True)}")
 
     def test_create_superuser(self):
+        # test that the user object contains all the necessary fields
         superuser = self.User.objects.create_superuser(
             email=constants.TEST_EMAIL, password=constants.TEST_PASSWORD
         )

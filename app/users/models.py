@@ -9,8 +9,9 @@ from .managers import UserManager
 from django.contrib.auth.models import User, AbstractUser
 
 
-# Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
+    """Base auth user model that overrides the django auth user model."""
+
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=30, blank=True)
     last_name = models.CharField(_("last name"), max_length=30, blank=True)

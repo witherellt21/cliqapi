@@ -56,54 +56,32 @@ jobs:
       - run:
           name: Run tests
           command: |
-            echo "TODO: run test commands here"
             docker exec cliq_app_server pytest
 
             
-  push_container_image:
-    docker:
-      - image: cimg/python:3.10
+  # push_container_image:
+  #   docker:
+  #     - image: cimg/python:3.10
 
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.11
-      - aws-cli/setup:
-          profile-name: default
-      - run:
-          <<: *download_app_env
-      - run:
-          name: Build and push docker image
-          command: |
-            # Log into ECR
-            export REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-            aws ecr get-login-password  | docker login --username AWS --password-stdin ${REGISTRY}
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker:
+  #         version: 20.10.11
+  #     - aws-cli/setup:
+  #         profile-name: default
+  #     - run:
+  #         <<: *download_app_env
+  #     - run:
+  #         name: Build and push docker image
+  #         command: |
+  #           # Log into ECR
+  #           export REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+  #           aws ecr get-login-password  | docker login --username AWS --password-stdin ${REGISTRY}
 
-            # Build docker and push to ECR
-            export TAG=${REGISTRY}/${ECR_REPO_NAME}:<<pipeline.git.revision>>  # If this is the first time, need to create the ECR repository first
-            docker build -f Dockerfile -t ${TAG} .
-            docker push ${TAG}
-
-  deploy:
-    docker:
-      - image: cimg/python:3.10
-
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.11
-      - aws-cli/setup:
-          profile-name: default
-      - run:
-          <<: *download_app_env
-      - run:
-          name: Deploy by updating the Kubernetes configmap on the ___-deploy repo
-          command: |
-            echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
-
-      when:
-        and: 
-          - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+  #           # Build docker and push to ECR
+  #           export TAG=${REGISTRY}/${ECR_REPO_NAME}:<<pipeline.git.revision>>  # If this is the first time, need to create the ECR repository first
+  #           docker build -f Dockerfile -t ${TAG} .
+  #           docker push ${TAG}
 
 workflows:
   version: 2
@@ -117,42 +95,42 @@ workflows:
             - infra-core
   
 
-  push_feature_branch:
-    when:
-      and: 
-        - equal: [ true, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
-    jobs:
-      - push_container_image:
-          <<: *test_only_branches
+  # push_feature_branch:
+  #   when:
+  #     and: 
+  #       - equal: [ true, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+  #   jobs:
+  #     - push_container_image:
+  #         <<: *test_only_branches
 
-          requires:
-            - run_tests
+  #         requires:
+  #           - run_tests
         
 
-  push_container:
-    jobs:
-      - run_tests:
-          <<: *push_container_only_branches
+  # push_container:
+  #   jobs:
+  #     - run_tests:
+  #         <<: *push_container_only_branches
             
-      - push_container_image:
-          <<: *push_container_only_branches
+  #     - push_container_image:
+  #         <<: *push_container_only_branches
 
-          requires:
-            - run_tests
+  #         requires:
+  #           - run_tests
 
 
-  deploy_int:
-    jobs:
-      - run_tests:
-          <<: *deploy_int_only_branches
+  # deploy_int:
+  #   jobs:
+  #     - run_tests:
+  #         <<: *deploy_int_only_branches
 
-      - push_container_image:
-          <<: *deploy_int_only_branches
-          requires:
-            - run_tests
+  #     - push_container_image:
+  #         <<: *deploy_int_only_branches
+  #         requires:
+  #           - run_tests
 
-      - deploy:
-          <<: *deploy_int_only_branches
+  #     - deploy:
+  #         <<: *deploy_int_only_branches
 
-          requires:
-            - push_container_image
+  #         requires:
+  #           - push_container_image

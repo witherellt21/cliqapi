@@ -101,9 +101,9 @@ jobs:
           command: |
             echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
 
-      when:
-        and: 
-          - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
+      # when:
+      #   and: 
+      #     - equal: [ false, << pipeline.parameters.PUSH_FEATURE_TO_ECR >> ]
 
 workflows:
   version: 2

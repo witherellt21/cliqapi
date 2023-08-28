@@ -84,22 +84,22 @@ jobs:
             docker build -f Dockerfile -t ${TAG} .
             docker push ${TAG}
 
-  deploy:
-    docker:
-      - image: cimg/python:3.10
+  # deploy:
+  #   docker:
+  #     - image: cimg/python:3.10
 
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.11
-      - aws-cli/setup:
-          profile-name: default
-      - run:
-          <<: *download_app_env
-      - run:
-          name: Deploy by updating the Kubernetes configmap on the ___-deploy repo
-          command: |
-            echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
+    # steps:
+    #   - checkout
+    #   - setup_remote_docker:
+    #       version: 20.10.11
+    #   - aws-cli/setup:
+    #       profile-name: default
+    #   - run:
+    #       <<: *download_app_env
+    #   - run:
+    #       name: Deploy by updating the Kubernetes configmap on the ___-deploy repo
+    #       command: |
+    #         echo "TODO: deploy by updating the bloop-deploy repo's values.yaml by updating the ${TAG} of the docker image. Need to automate loging into the private git repo and do a push."
 
 workflows:
   version: 2

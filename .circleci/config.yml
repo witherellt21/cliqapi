@@ -56,7 +56,6 @@ jobs:
       - run:
           name: Run tests
           command: |
-            echo "TODO: run test commands here"
             docker exec cliq_app_server pytest
 
             

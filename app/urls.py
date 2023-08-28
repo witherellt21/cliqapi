@@ -20,6 +20,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from django.conf.urls.static import static
 
+from rest_framework.authtoken import views as token_views
 
 from app import views
 from app import settings
@@ -30,6 +31,7 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
     path("movies", include("app.movie.urls")),
     path("get-health", views.getHealth, name="get-health"),
+    path("api-token-auth/", token_views.obtain_auth_token, name="auth-token"),
 ]
 
 urlpatterns = [path(r"api/v1/", include(urlpatterns))]

@@ -8,6 +8,14 @@ from .managers import UserManager
 
 from django.contrib.auth.models import User, AbstractUser
 
+from app.settings import AUTH_USER_MODEL
+
+
+class Profile(models.Model):
+    """Base model for a users profile."""
+
+    user = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Base auth user model that overrides the django auth user model."""

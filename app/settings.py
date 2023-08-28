@@ -37,7 +37,6 @@ AUTH_USER_MODEL = "users.User"
 
 INSTALLED_APPS = [
     "app.users",
-    "app.profiles",
     "app.movie",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -60,6 +59,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "app.urls"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+}
 
 TEMPLATES = [
     {

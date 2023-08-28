@@ -1,16 +1,18 @@
 import pytest
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.validators import EMPTY_VALUES
 
 from .. import constants
-
-from django.core.validators import EMPTY_VALUES
+from ...models import Profile
 
 
 class UserModelTestCase(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.User = get_user_model()
+        cls.Profile = Profile
         return super().setUpClass()
 
     @pytest.mark.db_check
@@ -30,3 +32,8 @@ class UserModelTestCase(TestCase):
         # self.assertEqual(superuser.avatar, "")
         self.assertEqual(superuser.is_active, True)
         self.assertNotIn(superuser.date_joined, EMPTY_VALUES)
+
+    def test_create_user_creates_profile(self):
+        user = self.User.objects.create()
+        profile = Profile.objects.get(user=user)
+        self.assertEqual(profile, user.profile)

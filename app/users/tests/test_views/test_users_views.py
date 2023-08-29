@@ -68,5 +68,5 @@ class LoginViewTestCase(TestCase):
         )
         force_authenticate(request)
         response = self.login_view(request)
-        print(response.data)
+        # print(response.data)
         # print(response.data.get("error", {}).get("long_message", None))

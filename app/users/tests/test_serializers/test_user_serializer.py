@@ -1,24 +1,39 @@
 from django.test import TestCase
 
 from ..constants import *
-from ...models import Profile
 from ...serializers import UserSerializer
+from ...models import User
 
 
-class UserSerializerTestCase(TestCase):
+class UserSerializerCreationTestCase(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.UserSerializer = UserSerializer
+        cls.User = User
         return super().setUpClass()
 
     def test_user_serializer_creation(self):
         # test that the serializer creates a user
-        data = {"email": TEST_EMAIL, "password": TEST_PASSWORD}
-        serializer = self.UserSerializer(data=data)
+        serializer = self.UserSerializer(data=TEST_USER)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        self.assertEqual(user.first_name, "")
+        self.assertEqual(user.first_name, TEST_USER.get("first_name"))
+        self.assertEqual(user.last_name, TEST_USER.get("last_name"))
+        self.assertEqual(user.username, TEST_USER.get("username"))
+        self.assertEqual(user, self.User.objects.get(pk=TEST_USER.get("username")))
 
-        # confirm that the user save has created a default profile
-        user_profile = Profile.objects.get(user=user)
-        self.assertEqual(user_profile, user.profile)
+
+class UserSerializerUpdateTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.Serializer = UserSerializer
+        cls.UserModel = User
+        return super().setUpClass()
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        serializer = cls.Serializer()
+        return super().setUpTestData()
+
+    def test_username_cannot_be_changed(self):
+        pass

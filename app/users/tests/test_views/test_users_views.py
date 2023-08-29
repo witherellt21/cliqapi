@@ -1,5 +1,8 @@
 from django.test import TestCase
-from django.contrib.auth.views import LoginView
+
+# from django.contrib.auth.views import LoginView
+
+# from django.contrib.auth import views as auth_views
 
 from rest_framework.authtoken import views as token_views
 from rest_framework import exceptions
@@ -19,7 +22,9 @@ class LoginViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.factory = APIRequestFactory()
-        cls.view = UserCreateAPIView.as_view()
+        # cls.view = UserCreateAPIView.as_view()
+        cls.view = create_account
+        cls.login_view = login
 
         # cls.token_view = token_views.obtain_auth_token
 
@@ -47,3 +52,21 @@ class LoginViewTestCase(TestCase):
         force_authenticate(request)
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_user_creation_and_sign_in(self):
+        request = self.factory.post(
+            reverse("user-create"),
+            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+        )
+        force_authenticate(request)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        request = self.factory.post(
+            reverse("login"),
+            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+        )
+        force_authenticate(request)
+        response = self.login_view(request)
+        print(response.data)
+        # print(response.data.get("error", {}).get("long_message", None))

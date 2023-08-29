@@ -3,5 +3,6 @@ from .views import *
 
 
 urlpatterns = [
-    path("", UserCreateAPIView.as_view(), name="user-create"),
+    path("", create_account, name="user-create"),
+    path("login", login, name="login"),
 ]

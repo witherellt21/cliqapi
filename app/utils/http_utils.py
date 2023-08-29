@@ -8,7 +8,7 @@ logger = logging.getLogger("main")
 
 def generate_error_response(message: str, status: int, **kwargs) -> Response:
     meta = kwargs.get("meta", None)
-    short_message = kwargs.get("short_message", None)
+    long_message = kwargs.get("long_message", None)
 
     if type(message) != str:
         raise TypeError("message argument must be of type string")
@@ -20,15 +20,15 @@ def generate_error_response(message: str, status: int, **kwargs) -> Response:
         if type(meta) != str:
             raise TypeError("meta argument must be of type string")
 
-    if short_message:
-        if type(short_message) != str:
-            raise TypeError("short_message argument must be of type string")
+    if long_message:
+        if type(long_message) != str:
+            raise TypeError("long_message argument must be of type string")
 
     error = {"message": message}
     if meta:
         error["meta"] = meta
-    if short_message:
-        error["short_message"] = short_message
+    if long_message:
+        error["long_message"] = long_message
 
     data = {"error": error}
 

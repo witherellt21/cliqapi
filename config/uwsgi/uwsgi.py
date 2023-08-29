@@ -50,7 +50,7 @@ timeout = 30
 # errorlog = accesslog
 # access_log_format           = 'logs/log_server_%(t)s-%(T)s.txt'
 # errorlog                    = 'logs/log_server_%(t)s-%(T)s.txt'
-capture_output = False
+capture_output = True
 # loglevel = "debug"
 
 

@@ -36,6 +36,7 @@ AUTH_USER_MODEL = "users.User"
 # Application definition
 
 INSTALLED_APPS = [
+    "app",
     "app.users",
     "app.movie",
     "django.contrib.admin",

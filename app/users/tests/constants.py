@@ -1,9 +1,19 @@
-# TEST_EMAIL = "emailaddress@example.com"
-# TEST_PASSWORD = "123testing!"
+TEST_USERNAME = "moviefan321"
+TEST_PASSWORD = "123testing!"
+TEST_EMAIL_ADDRESS = "example@domain.com"
+TEST_ID = "user_123456789"
+
+# TEST_USER = {
+#     # "id": "user_13414",
+#     "username": "user_13431",
+#     "first_name": "Taylor",
+#     "last_name": "With",
+# }
 
 TEST_USER = {
-    # "id": "user_13414",
-    "username": "user_13431",
+    "id": TEST_ID,
+    "email_address": TEST_EMAIL_ADDRESS,
+    "username": TEST_USERNAME,
     "first_name": "Taylor",
     "last_name": "With",
 }

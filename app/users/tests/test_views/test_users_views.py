@@ -13,7 +13,7 @@ from django.urls import reverse
 
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from ..constants import TEST_EMAIL, TEST_PASSWORD
+from ..constants import TEST_EMAIL_ADDRESS, TEST_PASSWORD
 
 from ...views import *
 
@@ -31,7 +31,7 @@ class LoginViewTestCase(TestCase):
     def test_view_url_exists(self):
         request = self.factory.post(
             reverse("user-create"),
-            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
         )
         force_authenticate(request)
         response = self.view(request)
@@ -40,15 +40,17 @@ class LoginViewTestCase(TestCase):
     def test_user_creation(self):
         request = self.factory.post(
             reverse("user-create"),
-            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
         )
         force_authenticate(request)
         response = self.view(request)
-        self.assertEqual(response.data.get("email"), TEST_EMAIL)
+        self.assertEqual(response.data.get("email"), TEST_EMAIL_ADDRESS)
         self.assertNotIn("password", response.data.keys())
 
     def test_user_creation_without_password(self):
-        request = self.factory.post(reverse("user-create"), data={"email": TEST_EMAIL})
+        request = self.factory.post(
+            reverse("user-create"), data={"email": TEST_EMAIL_ADDRESS}
+        )
         force_authenticate(request)
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -56,7 +58,7 @@ class LoginViewTestCase(TestCase):
     def test_user_creation_and_sign_in(self):
         request = self.factory.post(
             reverse("user-create"),
-            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
         )
         force_authenticate(request)
         response = self.view(request)
@@ -64,7 +66,7 @@ class LoginViewTestCase(TestCase):
 
         request = self.factory.post(
             reverse("login"),
-            data={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
         )
         force_authenticate(request)
         response = self.login_view(request)

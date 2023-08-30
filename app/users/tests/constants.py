@@ -12,7 +12,7 @@ TEST_ID = "user_123456789"
 
 TEST_USER = {
     "id": TEST_ID,
-    "email_address": TEST_EMAIL_ADDRESS,
+    "email": TEST_EMAIL_ADDRESS,
     "username": TEST_USERNAME,
     "first_name": "Taylor",
     "last_name": "With",

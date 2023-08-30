@@ -12,7 +12,7 @@ python manage.py migrate --database=default && \
 # python manage.py migrate --database=default users zero && \
 # python manage.py migrate --database=default && movies zero \
 # python manage.py migrate --database=default movies && \
-# python manage.py migrate --database=default users && \
+python manage.py migrate --database=default users && \
 # python manage.py migrate --database=default && \
 
 # python manage.py migrate users

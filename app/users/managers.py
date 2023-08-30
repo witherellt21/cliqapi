@@ -1,7 +1,10 @@
+from typing import Any
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 
 from django.apps import apps
+
+from .utils import generate_user_identifier
 
 
 class UserManager(BaseUserManager):
@@ -9,15 +12,16 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
-    def _create_user(self, username, email_address, **extra_fields):
+    def _create_user(self, username, email, **extra_fields):
         """
         Creates and saves a User with the given email and password.
         """
+        # extra_fields.setdefault("id", generate_user_identifier())
         password = extra_fields.get("password", None)
 
         if not username:
             raise ValueError("The given username must be set")
-        email_address = self.normalize_email(email_address)
+        email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
@@ -25,20 +29,18 @@ class UserManager(BaseUserManager):
             self.model._meta.app_label, self.model._meta.object_name
         )
         username = GlobalUserModel.normalize_username(username)
-        user = self.model(
-            username=username, email_address=email_address, **extra_fields
-        )
+        user = self.model(username=username, email=email, **extra_fields)
         if password:
             user.password = make_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email_address, **extra_fields):
+    def create_user(self, username, email, **extra_fields):
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_staff", False)
-        return self._create_user(username, email_address, **extra_fields)
+        return self._create_user(username, email, **extra_fields)
 
-    def create_superuser(self, username, email_address, password, **extra_fields):
+    def create_superuser(self, username, email, password, **extra_fields):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("password", password)
@@ -48,4 +50,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
 
-        return self._create_user(username, email_address, **extra_fields)
+        return self._create_user(username, email, **extra_fields)
+
+    def create(self, **kwargs: Any) -> Any:
+        return super().create(**kwargs)

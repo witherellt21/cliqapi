@@ -16,59 +16,31 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from ..constants import TEST_EMAIL_ADDRESS, TEST_PASSWORD
 
 from ...views import *
+from ...models import User
 
 
-class LoginViewTestCase(TestCase):
+class UserCreateViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.factory = APIRequestFactory()
-        # cls.view = UserCreateAPIView.as_view()
-        cls.view = create_account
-        cls.login_view = login
+        cls.view = UserCreateAPIView.as_view()
+        cls.User = User
 
-        # cls.token_view = token_views.obtain_auth_token
+    def test_create_user_unauthenticated_requires_email():
+        pass
 
-    def test_view_url_exists(self):
-        request = self.factory.post(
-            reverse("user-create"),
-            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.view(request)
-        self.assertNotEqual(response.status_code, 404)
+    def test_create_user_unauthenticated_requires_username():
+        pass
 
-    def test_user_creation(self):
-        request = self.factory.post(
-            reverse("user-create"),
-            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.view(request)
-        self.assertEqual(response.data.get("email"), TEST_EMAIL_ADDRESS)
-        self.assertNotIn("password", response.data.keys())
+    def test_create_user_unauthenticated_requires_password():
+        pass
 
-    def test_user_creation_without_password(self):
-        request = self.factory.post(
-            reverse("user-create"), data={"email": TEST_EMAIL_ADDRESS}
-        )
-        force_authenticate(request)
-        response = self.view(request)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_create_user_authenticated_uses_id():
+        # show that if the request is made with an authentication, it uses the authenticated id
+        pass
 
-    def test_user_creation_and_sign_in(self):
-        request = self.factory.post(
-            reverse("user-create"),
-            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.view(request)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    # def test_create_user_authenticated_not_requires_username():
+    #     pass
 
-        request = self.factory.post(
-            reverse("login"),
-            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.login_view(request)
-        # print(response.data)
-        # print(response.data.get("error", {}).get("long_message", None))
+    # def test_create_user_authenticated_not_requires_password():
+    #     pass

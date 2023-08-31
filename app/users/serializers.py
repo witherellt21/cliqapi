@@ -1,4 +1,3 @@
-# from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import User
@@ -7,8 +6,7 @@ from .models import User
 class UserCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # fields = "__all__"
-        exclude = ("password",)
+        fields = "__all__"
 
         # These fields are displayed but not editable and have to be a part of 'fields' tuple
         read_only_fields = (

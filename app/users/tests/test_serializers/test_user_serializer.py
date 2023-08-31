@@ -15,8 +15,11 @@ class UserCreationSerializerTestCase(TestCase):
         return super().setUpClass()
 
     def test_user_serializer_default_id(self):
-        data = TEST_USER.copy()
-        data.pop("id")
+        data = {
+            "username": TEST_USERNAME,
+            "email": TEST_EMAIL_ADDRESS,
+            "password": TEST_PASSWORD,
+        }
         serializer = self.UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -25,16 +28,33 @@ class UserCreationSerializerTestCase(TestCase):
         self.assertTrue(user.id.startswith("user_"))
 
     def test_user_serializer_requires_email(self):
-        data = TEST_USER.copy()
-        data.pop("email")
+        data = {
+            "id": TEST_ID,
+            "username": TEST_USERNAME,
+            "password": TEST_PASSWORD,
+        }
         serializer = self.UserSerializer(data=data)
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
 
     def test_user_serializer_requires_username(self):
-        data = TEST_USER.copy()
-        data.pop("username")
+        data = {
+            "id": TEST_ID,
+            "email": TEST_EMAIL_ADDRESS,
+            "password": TEST_PASSWORD,
+        }
+        serializer = self.UserSerializer(data=data)
+        self.assertRaises(
+            ValidationError, lambda: serializer.is_valid(raise_exception=True)
+        )
+
+    def test_user_serializer_requires_password(self):
+        data = {
+            "id": TEST_ID,
+            "username": TEST_USERNAME,
+            "email": TEST_EMAIL_ADDRESS,
+        }
         serializer = self.UserSerializer(data=data)
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
@@ -42,7 +62,14 @@ class UserCreationSerializerTestCase(TestCase):
 
     def test_user_serializer_creation(self):
         # test that the serializer creates a user
-        data = TEST_USER.copy()
+        data = {
+            "id": TEST_ID,
+            "username": TEST_USERNAME,
+            "email": TEST_EMAIL_ADDRESS,
+            "password": TEST_PASSWORD,
+            "first_name": TEST_USER.get("first_name"),
+            "last_name": TEST_USER.get("last_name"),
+        }
         serializer = self.UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -56,7 +83,12 @@ class UserCreationSerializerTestCase(TestCase):
         )
 
     def test_update_raises_attribute_error(self):
-        data = TEST_USER.copy()
+        data = {
+            "id": TEST_ID,
+            "username": TEST_USERNAME,
+            "email": TEST_EMAIL_ADDRESS,
+            "password": TEST_PASSWORD,
+        }
         serializer = self.UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -77,6 +109,7 @@ class UserSerializerUpdateTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         data = TEST_USER.copy()
+        data["password"] = TEST_PASSWORD
         serializer = cls.CreationSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         cls.instance = serializer.save()
@@ -112,6 +145,14 @@ class UserSerializerUpdateTestCase(TestCase):
     def test_change_id_not_allowed(self):
         serializer = self.Serializer(
             instance=self.instance, data={"id": "user_987654321"}, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        self.assertEqual(user.id, TEST_ID)
+
+    def test_change_password_not_allowed(self):
+        serializer = self.Serializer(
+            instance=self.instance, data={"password": "newpassword"}, partial=True
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

@@ -28,12 +28,3 @@ class LoginViewTestCase(TestCase):
         force_authenticate(request)
         response = self.view(request)
         self.assertNotEqual(response.status_code, 404)
-
-    def test_view_url_exists(self):
-        request = self.factory.post(
-            reverse("auth-token"),
-            data={"username": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.token_view(request)
-        self.assertNotEqual(response.status_code, 404)

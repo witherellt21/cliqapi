@@ -29,11 +29,9 @@ from app import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("login/", auth_views.LoginView.as_view(), name="login"),
     path("users", include("app.users.urls")),
     path("movies", include("app.movie.urls")),
     path("get-health", views.getHealth, name="get-health"),
-    # path("api-token-auth/", token_views.obtain_auth_token, name="auth-token"),
 ]
 
 urlpatterns = [path(r"api/v1/", include(urlpatterns))]

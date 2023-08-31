@@ -12,15 +12,6 @@ class EmailAuthBackend(ModelBackend):
     """
 
     def authenticate(self, request, username=None, password=None, *args, **kwargs):
-        #     try:
-        #         user = User.objects.get(email=username)
-        #         if user.check_password(password):
-        #             return user
-        #         return None
-        #     except User.DoesNotExist:
-        #         return None
-
-        # print(UserModel.USERNAME_FIELD)
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
         if username is None or password is None:
@@ -32,18 +23,5 @@ class EmailAuthBackend(ModelBackend):
             # difference between an existing and a nonexistent user (#20760).
             UserModel().set_password(password)
         else:
-            # print("checking password")
-            # print(user.email)
-            # print(user.password)
-            # print(password)
-            # print(user.check_password(str(password)))
-            # print(self.user_can_authenticate(user))
             if user.check_password(password) and self.user_can_authenticate(user):
                 return user
-
-
-# def get_user(self, user_id):
-#     try:
-#         return UserModel.objects.get(pk=user_id)
-#     except UserModel.DoesNotExist:
-#         return None

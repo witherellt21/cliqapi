@@ -117,7 +117,7 @@ class UserSerializerUpdateTestCase(TestCase):
         user = serializer.save()
         self.assertEqual(user.id, TEST_ID)
 
-    def test_username_already_exists(self):
+    def test_username_already_exists_raises_ValidationError(self):
         # create new user with the same username as self.instance
         new_data = {
             "username": TEST_USERNAME,
@@ -129,7 +129,7 @@ class UserSerializerUpdateTestCase(TestCase):
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
 
-    def test_email_already_exists(self):
+    def test_email_already_exists_raises_ValidationError(self):
         new_data = {
             "username": "different_username",
             "id": "user_987654321",
@@ -140,7 +140,7 @@ class UserSerializerUpdateTestCase(TestCase):
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
 
-    def test_id_already_exists(self):
+    def test_id_already_exists_raises_ValidationError(self):
         new_data = {
             "username": "different_username",
             "id": TEST_ID,
@@ -151,7 +151,7 @@ class UserSerializerUpdateTestCase(TestCase):
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
 
-    def test_change_username_already_exists(self):
+    def test_change_username_already_exists_raises_ValidationError(self):
         # create new user with a different username as self.instance
         new_data = {
             "username": "different_name",
@@ -170,7 +170,7 @@ class UserSerializerUpdateTestCase(TestCase):
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
 
-    def test_change_email_already_exists(self):
+    def test_change_email_already_exists_raises_ValidationError(self):
         # create new user with a different username as self.instance
         new_data = {
             "username": "different_name",

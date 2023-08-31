@@ -1,10 +1,9 @@
 import logging
 
-from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, mixins
 
-from app.movie.models import Movie
-from app.movie.serializers import MovieSerializer
+from .models import Movie
+from .serializers import MovieSerializer
 
 logger = logging.getLogger("main")
 

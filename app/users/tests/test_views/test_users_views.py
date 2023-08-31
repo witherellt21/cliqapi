@@ -5,7 +5,6 @@ from rest_framework import exceptions
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 from ..constants import TEST_EMAIL_ADDRESS, TEST_PASSWORD, TEST_USERNAME, TEST_ID
-
 from ...views import *
 from ...models import User
 
@@ -81,6 +80,31 @@ class UserCreateViewTestCase(TestCase):
         self.assertEqual(response.data.get("is_superuser"), False)
         self.assertEqual(response.data.get("is_staff"), False)
 
+    def test_create_multiple_unauthenticated_users(self):
+        request = self.factory.post(
+            reverse("login"),
+            data={
+                "email": TEST_EMAIL_ADDRESS,
+                "username": TEST_USERNAME,
+                "password": TEST_PASSWORD,
+            },
+        )
+        force_authenticate(request)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        request = self.factory.post(
+            reverse("login"),
+            data={
+                "email": "differentemail@domain.com",
+                "username": "ilovemovies24",
+                "password": TEST_PASSWORD,
+            },
+        )
+        force_authenticate(request)
+        response = self.view(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_create_user_authenticated_uses_authenticated_data(self):
         # show that if the request is made with an authentication, it uses the authenticated id
         request = self.factory.post(reverse("login"))
@@ -100,9 +124,3 @@ class UserCreateViewTestCase(TestCase):
         self.assertEqual(response.data.get("id"), TEST_ID)
         self.assertEqual(response.data.get("username"), TEST_USERNAME)
         self.assertEqual(response.data.get("email"), TEST_EMAIL_ADDRESS)
-
-    # def test_create_user_authenticated_not_requires_username():
-    #     pass
-
-    # def test_create_user_authenticated_not_requires_password():
-    #     pass

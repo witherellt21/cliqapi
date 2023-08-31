@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from app.movie import utils
+from .. import utils
 
 
 class MovieUtilsTestCase(TestCase):

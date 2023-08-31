@@ -124,7 +124,6 @@ class UserModelTestCase(TestCase):
         self.assertNotEqual(superuser.password, "")
         self.assertEqual(superuser.first_name, "")
         self.assertEqual(superuser.last_name, "")
-        # self.assertEqual(superuser.avatar, "")
         self.assertEqual(superuser.is_active, True)
         self.assertNotIn(superuser.date_joined, EMPTY_VALUES)
 

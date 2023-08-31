@@ -7,9 +7,9 @@ from django.utils.crypto import get_random_string
 from rest_framework import generics, mixins, status, exceptions, response
 from rest_framework.decorators import api_view
 
-from .serializers import UserCreationSerializer
-
 from app.utils.http_utils import generate_error_response
+
+from .serializers import UserCreationSerializer
 
 
 class UserCreateAPIView(

@@ -1,10 +1,7 @@
 from typing import Any
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
-
 from django.apps import apps
-
-from .utils import generate_user_identifier
 
 
 class UserManager(BaseUserManager):

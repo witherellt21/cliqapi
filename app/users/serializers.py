@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _, gettext
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from .models import User
 
@@ -45,5 +45,5 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raise AttributeError(
-            gettext(f"{self.__class__.__name__} has no attribute 'create'.")
+            ugettext(f"{self.__class__.__name__} has no attribute 'create'.")
         )

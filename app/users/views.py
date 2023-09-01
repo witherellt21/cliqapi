@@ -3,7 +3,7 @@ import traceback
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth import login as _login
 from django.utils.crypto import get_random_string
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import generics, mixins, status, exceptions, response
 from rest_framework.decorators import api_view

@@ -1,5 +1,5 @@
 from django.urls import path
-from app.movie import views
+from . import views
 
 urlpatterns = [
     path("", views.MovieListCreateAPIView.as_view(), name="movie-list-create"),

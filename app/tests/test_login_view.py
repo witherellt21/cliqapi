@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from ..users.tests.constants import TEST_EMAIL, TEST_PASSWORD
+from ..users.tests.constants import TEST_EMAIL_ADDRESS, TEST_PASSWORD
 
 
 class LoginViewTestCase(TestCase):
@@ -22,17 +22,9 @@ class LoginViewTestCase(TestCase):
 
     def test_view_url_exists(self):
         request = self.factory.post(
-            reverse("login"), data={"email": TEST_EMAIL, "password": TEST_PASSWORD}
+            reverse("login"),
+            data={"email": TEST_EMAIL_ADDRESS, "password": TEST_PASSWORD},
         )
         force_authenticate(request)
         response = self.view(request)
-        self.assertNotEqual(response.status_code, 404)
-
-    def test_view_url_exists(self):
-        request = self.factory.post(
-            reverse("auth-token"),
-            data={"username": TEST_EMAIL, "password": TEST_PASSWORD},
-        )
-        force_authenticate(request)
-        response = self.token_view(request)
         self.assertNotEqual(response.status_code, 404)

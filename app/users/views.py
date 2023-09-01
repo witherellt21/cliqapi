@@ -78,13 +78,13 @@ def create_account(request, *args, **kwargs):
 
     except exceptions.APIException as api_error:
         return generate_error_response(
-            _(str(api_error)),
+            str(api_error),
             status=api_error.status_code,
             long_message=traceback.format_exc(),
         )
     except Exception as e:
         return generate_error_response(
-            _(str(e)),
+            str(e),
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             long_message=traceback.format_exc(),
         )
@@ -103,13 +103,13 @@ def login(request):
 
     except exceptions.APIException as api_error:
         return generate_error_response(
-            _(str(api_error)),
+            str(api_error),
             status=api_error.status_code,
             long_message=traceback.format_exc(),
         )
     except Exception as e:
         return generate_error_response(
-            _(str(api_error)),
+            str(api_error),
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             long_message=traceback.format_exc(),
         )

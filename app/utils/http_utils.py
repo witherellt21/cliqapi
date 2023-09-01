@@ -26,6 +26,8 @@ def generate_error_response(message: str, status: int, **kwargs) -> Response:
         if type(long_message) != str:
             raise TypeError("long_message argument must be of type string")
 
+    logger.error(message)
+
     error = {"message": _(message)}
     if meta:
         error["meta"] = meta
@@ -33,7 +35,5 @@ def generate_error_response(message: str, status: int, **kwargs) -> Response:
         error["long_message"] = _(long_message)
 
     data = {"error": error}
-
-    logger.error(message)
 
     return Response(data=data, status=status)

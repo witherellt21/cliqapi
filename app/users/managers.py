@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class UserManager(BaseUserManager):

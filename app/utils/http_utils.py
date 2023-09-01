@@ -2,7 +2,7 @@ import logging
 
 from rest_framework.response import Response
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 logger = logging.getLogger("main")

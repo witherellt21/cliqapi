@@ -1,8 +1,15 @@
+from random import choices
+import string
+
 import requests
 
 from rest_framework import exceptions
 from app.exceptions import InternalServerError
 from app.settings import env
+
+
+def generate_user_identifier():
+    return "user_" + "".join(choices(string.ascii_letters + string.digits, k=27))
 
 
 UTELLY_API_HOST = "utelly-tv-shows-and-movies-availability-v1.p.rapidapi.com"

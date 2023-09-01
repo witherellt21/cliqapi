@@ -2,6 +2,8 @@ import logging
 
 from rest_framework.response import Response
 
+from django.utils.translation import ugettext as _
+
 
 logger = logging.getLogger("main")
 
@@ -11,7 +13,7 @@ def generate_error_response(message: str, status: int, **kwargs) -> Response:
     long_message = kwargs.get("long_message", None)
 
     if type(message) != str:
-        raise TypeError("message argument must be of type string")
+        raise TypeError("message argument must be of type str")
 
     if type(status) != int:
         raise TypeError("status argument must be of type integer")
@@ -24,11 +26,11 @@ def generate_error_response(message: str, status: int, **kwargs) -> Response:
         if type(long_message) != str:
             raise TypeError("long_message argument must be of type string")
 
-    error = {"message": message}
+    error = {"message": _(message)}
     if meta:
         error["meta"] = meta
     if long_message:
-        error["long_message"] = long_message
+        error["long_message"] = _(long_message)
 
     data = {"error": error}
 

@@ -3,6 +3,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
 
+from django.utils.translation import ugettext as _
+
 
 class UserManager(BaseUserManager):
     """Manager for our custom user model users.models.User"""
@@ -13,11 +15,10 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a User with the given email and password.
         """
-        # extra_fields.setdefault("id", generate_user_identifier())
-        password = extra_fields.get("password", None)
+        password = extra_fields.get(_("password"), None)
 
         if not username:
-            raise ValueError("The given username must be set")
+            raise ValueError(_("The given username must be set"))
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
@@ -43,9 +44,9 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("password", password)
 
         if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
+            raise ValueError(_("Superuser must have is_superuser=True."))
         if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
+            raise ValueError(_("Superuser must have is_staff=True."))
 
         return self._create_user(username, email, **extra_fields)
 

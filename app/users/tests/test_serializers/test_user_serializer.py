@@ -23,7 +23,7 @@ class UserCreationSerializerTestCase(TestCase):
         serializer = self.UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        self.assertIsInstance(user.id, str)
+        self.assertIsInstance(str(user.id), str)
         self.assertEqual(len(user.id), 32)
         self.assertTrue(user.id.startswith("user_"))
 

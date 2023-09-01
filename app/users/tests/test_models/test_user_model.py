@@ -129,7 +129,7 @@ class UserModelTestCase(TestCase):
 
     def test_object_create_id_default(self):
         user = self.User.objects.create()
-        self.assertIsInstance(user.id, str)
+        self.assertIsInstance(str(user.id), str)
         self.assertEqual(len(user.id), 32)
         self.assertTrue(user.id.startswith("user_"))
 

@@ -10,9 +10,20 @@ class User(AbstractUser):
     """Base auth user model that overrides the django auth user model."""
 
     id = models.CharField(
-        primary_key=True, unique=True, default=generate_user_identifier, max_length=40
+        name=_("id"),
+        verbose_name=_("ids"),
+        primary_key=True,
+        unique=True,
+        default=generate_user_identifier,
+        max_length=40,
     )
-    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    avatar = models.ImageField(
+        name=_("avatar"),
+        verbose_name=_("avatars"),
+        upload_to="avatars/",
+        null=True,
+        blank=True,
+    )
     email = models.EmailField(_("email address"), unique=True)
 
     objects = UserManager()

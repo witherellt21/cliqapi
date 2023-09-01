@@ -3,6 +3,7 @@ import traceback
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth import login as _login
 from django.utils.crypto import get_random_string
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import generics, mixins, status, exceptions, response
 from rest_framework.decorators import api_view
@@ -28,6 +29,7 @@ class UserCreateAPIView(
             if user != "AnonymousUser" and auth != None:
                 username = auth.get("username", None)
                 email = auth.get("email", None)
+
                 password = request.data.get(
                     "password",
                     get_random_string(12),
@@ -71,18 +73,18 @@ def create_account(request, *args, **kwargs):
         return response.Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
-            content_type="application/json",
+            content_type=_("application/json"),
         )
 
     except exceptions.APIException as api_error:
         return generate_error_response(
-            str(api_error),
+            _(str(api_error)),
             status=api_error.status_code,
             long_message=traceback.format_exc(),
         )
     except Exception as e:
         return generate_error_response(
-            traceback.format_exc(),
+            _(str(e)),
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             long_message=traceback.format_exc(),
         )
@@ -91,23 +93,23 @@ def create_account(request, *args, **kwargs):
 @api_view(["POST"])
 def login(request):
     try:
-        email = request.POST["email"]
-        password = request.POST["password"]
+        email = request.POST[_("email")]
+        password = request.POST[_("password")]
         user = authenticate(request, username=email, password=password)
         if user is not None:
             res = _login(request, user)
         else:
-            raise exceptions.APIException("Invalid login.")
+            raise exceptions.APIException(_("Invalid login."))
 
     except exceptions.APIException as api_error:
         return generate_error_response(
-            str(api_error),
+            _(str(api_error)),
             status=api_error.status_code,
             long_message=traceback.format_exc(),
         )
     except Exception as e:
         return generate_error_response(
-            str(e),
+            _(str(api_error)),
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             long_message=traceback.format_exc(),
         )

@@ -12,7 +12,7 @@ def default_genres():
 
 class Movie(models.Model):
     title = models.CharField(_("title"), max_length=50)
-    duration = models.CharField(_("title"), max_length=50)
+    duration = models.IntegerField(_("duration"))
     release_year = models.IntegerField(_("release year"))
     genres = ArrayField(
         models.CharField(max_length=20, choices=Genre.choices),

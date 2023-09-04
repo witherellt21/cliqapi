@@ -55,3 +55,43 @@ class MovieSerializerTestCase(TestCase):
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
+
+    def test_invalid_duration_raises_ValidationError(self):
+        serializer = self.Serializer(
+            self.instance,
+            data={"duration": "string"},
+            partial=True,
+        )
+        self.assertRaises(
+            ValidationError, lambda: serializer.is_valid(raise_exception=True)
+        )
+
+    def test_duration_is_int(self):
+        serializer = self.Serializer(
+            self.instance,
+            data={"duration": 97},
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        self.assertEqual(instance.duration, 97)
+
+    def test_invalid_title_raises_ValidationError(self):
+        serializer = self.Serializer(
+            self.instance,
+            data={"title": {}},
+            partial=True,
+        )
+        self.assertRaises(
+            ValidationError, lambda: serializer.is_valid(raise_exception=True)
+        )
+
+    def test_title_is_string(self):
+        serializer = self.Serializer(
+            self.instance,
+            data={"title": "This is a valid title"},
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        self.assertEqual(instance.title, "This is a valid title")

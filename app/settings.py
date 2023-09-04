@@ -31,14 +31,14 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "myapp.User"
 
 # Application definition
 
 INSTALLED_APPS = [
     "app",
-    "app.users",
     "app.myapp",
+    "app.movie",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

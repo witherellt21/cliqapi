@@ -30,7 +30,6 @@ from app import settings
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("users", include("app.myapp.urls")),
-    path("movies", include("app.movie.urls")),
     path("get-health", views.getHealth, name="get-health"),
 ]
 

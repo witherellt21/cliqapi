@@ -13,7 +13,7 @@ class MovieRating(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.DO_NOTHING)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
     rating = models.DecimalField(_("rating"), max_digits=3, decimal_places=1)
-    rated_on = models.DateTimeField(_("rated on"), auto_now_add=True)
+    rated_on = models.DateTimeField(_("rated on"), auto_now_add=True, editable=False)
 
     # likes = LikesField
     # comments = CommentsField

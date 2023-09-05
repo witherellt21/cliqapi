@@ -26,7 +26,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = "django-insecure-yrlcn7#vl==_29dntw&(yzw$gef8174vd22oja$js1wjy=j4k*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -49,16 +49,34 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
 ]
 
+# DEBUG_PROPAGATE_EXCEPTIONS = True
+ALLOWED_HOSTS = ["localhost"]
+
 MIDDLEWARE = [
+    # "app.middleware.ErrorHandlingMiddleware",
+    "app.middleware.RequestLoggingMiddleware",
+    # "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.common.CommonMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "app.middleware.RequestHandlerMiddleware",
+    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+# from django.middleware import security, common, csrf, clickjacking
+# from django.contrib import sessions, auth, messages
+# from django.contrib.sessions.middleware import SessionMiddleware
+# from django.contrib.auth.middleware import AuthenticationMiddleware
+# from django.contrib.messages.middleware import MessageMiddleware
+
+# security.SecurityMiddleware
+# common.CommonMiddleware
+# csrf.CsrfViewMiddleware
+# clickjacking.XFrameOptionsMiddleware
+
+# SessionMiddleware
+
 
 ROOT_URLCONF = "app.urls"
 

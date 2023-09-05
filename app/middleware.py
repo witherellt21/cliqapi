@@ -1,16 +1,11 @@
-import logging, random, traceback
+import logging, random
 from time import time
 from typing import Any
-
-from rest_framework import exceptions
-from rest_framework import status
-
-from app.utils.http_utils import generate_error_response
 
 logger = logging.getLogger("main")
 
 
-class RequestHandlerMiddleware:
+class RequestLoggingMiddleware:
     def __init__(self, get_response) -> None:
         self.get_response = get_response
 
@@ -31,23 +26,10 @@ class RequestHandlerMiddleware:
 
         # Process request - record elapsed time
         start = time()
-
-        try:
-            response = self.get_response(request)
-        except exceptions.APIException as api_error:
-            response = generate_error_response(
-                str(api_error),
-                status=api_error.status_code,
-                long_message=traceback.format_exc(),
-            )
-        except Exception as e:
-            response = generate_error_response(
-                str(e),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                long_message=traceback.format_exc(),
-            )
+        response = self.get_response(request)
         elapsed = round(time() - start, 3)
 
+        # TODO: use resolve/reverse for this
         if not request.get_full_path() == "/api/v1/metrics/get-status":
             logger.info(
                 f"End Request - {request_identifier} - {remote} - {request.method} - {request.get_full_path()} - {response.status_code} ({str(elapsed)}s)"

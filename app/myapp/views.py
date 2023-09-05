@@ -1,17 +1,21 @@
 import traceback
 
-from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth import login as _login
+from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import generics, mixins, status, exceptions, response
+from rest_framework import generics, mixins, status, exceptions
+from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from app.utils.http_utils import generate_error_response
 
 from .models import MovieRating
-from .serializers import UserCreationSerializer
+from .serializers import UserCreationSerializer, MovieRatingSerializer
+
+import logging
+
+logger = logging.getLogger("main")
 
 
 class UserCreateAPIView(
@@ -40,7 +44,6 @@ class UserCreateAPIView(
                 if all([username, email]):
                     request.data.update(
                         {
-                            "id": user,
                             "username": username,
                             "email": email,
                             "password": password,
@@ -49,6 +52,7 @@ class UserCreateAPIView(
 
             return self.create(request, *args, **kwargs)
 
+        # TODO: probably don't need this
         except exceptions.APIException as api_error:
             return generate_error_response(
                 str(api_error),
@@ -71,28 +75,54 @@ class MovieRatingAPIView(
     generics.GenericAPIView,
 ):
     queryset = MovieRating.objects.all()
-    serializer_class = UserCreationSerializer
+    serializer_class = MovieRatingSerializer
     lookup_field = "pk"
 
-    def get(self, request, *args, **kwargs):
-        if kwargs.get("id", False):
-            return self.retrieve(request, *args, **kwargs)
-        return self.list(request, *args, **kwargs)
+    def get_object(self):
+        return super().get_object()
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            self.queryset = self.queryset.filter(user__id=user_id)
+
+            if kwargs.get("pk", None):
+                return self.retrieve(request, *args, **kwargs)
+
+            payload = {
+                "results": self.get_serializer(self.queryset, many=True).data,
+                "count": self.queryset.count(),
+            }
+
+            return Response(data=payload, status=status.HTTP_200_OK)
+
+        except exceptions.APIException as api_error:
+            return generate_error_response(
+                str(api_error),
+                status=api_error.status_code,
+                long_message=traceback.format_exc(),
+            )
+        except Exception as e:
+            return generate_error_response(
+                str(e),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                long_message=traceback.format_exc(),
+            )
+
+    def post(self, request, user_id, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-        # except exceptions.APIException as api_error:
-        #     return generate_error_response(
-        #         str(api_error),
-        #         status=api_error.status_code,
-        #         long_message=traceback.format_exc(),
-        #     )
-        # except Exception as e:
-        #     return generate_error_response(
-        #         str(e),
-        #         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        #         long_message=traceback.format_exc(),
-        #     )
+    def delete(self, request, user_id, *args, **kwargs):
+        try:
+            return self.destroy(request, *args, **kwargs)
+        except exceptions.APIException as api_error:
+            return generate_error_response(
+                str(api_error),
+                status=api_error.status_code,
+                long_message=traceback.format_exc(),
+            )
+        except Exception as e:
+            return generate_error_response(
+                str(e),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                long_message=traceback.format_exc(),
+            )

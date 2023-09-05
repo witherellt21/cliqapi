@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils.translation import gettext as _
 
-from .models import User
+from .models import User, MovieRating
 
 
 class UserCreationSerializer(serializers.ModelSerializer):
@@ -45,3 +45,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raise AttributeError(_(f"{self.__class__.__name__} has no attribute 'create'."))
+
+
+class MovieRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieRating
+        exclude = ("id",)

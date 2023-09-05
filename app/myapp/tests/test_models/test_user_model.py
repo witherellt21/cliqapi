@@ -6,9 +6,12 @@ from django.core.validators import EMPTY_VALUES
 from django.db.utils import IntegrityError
 
 from .. import constants
+from ..factories import UserFactory
+
+pytestmark = pytest.mark.django_db
 
 
-class UserModelTestCase(TestCase):
+class UserModelCreateTestCase(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.User = get_user_model()
@@ -86,21 +89,6 @@ class UserModelTestCase(TestCase):
             ),
         )
 
-    def test_create_users_same_id_raises_IntegrityError(self):
-        user = self.User.objects.create_user(
-            username=constants.TEST_USERNAME,
-            email=constants.TEST_EMAIL_ADDRESS,
-        )
-
-        self.assertRaises(
-            IntegrityError,
-            lambda: self.User.objects.create_user(
-                username="differentusername",
-                email="differentemail@domain.com",
-                id=user.id,
-            ),
-        )
-
     def test_create_multiple_users(self):
         user = self.User.objects.create_user(
             username=constants.TEST_USERNAME,
@@ -110,7 +98,6 @@ class UserModelTestCase(TestCase):
             username="differentusername", email="differentemail@domain.com"
         )
         self.assertNotEqual(user.id, user2.id)
-        self.assertEqual(len(user.id), 32)
 
     def test_create_superuser(self):
         # test that the user object contains all the necessary fields
@@ -129,9 +116,7 @@ class UserModelTestCase(TestCase):
 
     def test_object_create_id_default(self):
         user = self.User.objects.create()
-        self.assertIsInstance(str(user.id), str)
-        self.assertEqual(len(user.id), 32)
-        self.assertTrue(user.id.startswith("user_"))
+        self.assertIsInstance(user.id, int)
 
     def test_object_create_same_usernames_raises_IntegrityError(self):
         user = self.User.objects.create(username=constants.TEST_USERNAME)
@@ -153,3 +138,9 @@ class UserModelTestCase(TestCase):
             IntegrityError,
             lambda: self.User.objects.create(id=user.id),
         )
+
+
+def test_user_factory():
+    user = UserFactory()
+    print(user.username)
+    assert user.username != None

@@ -13,7 +13,7 @@ class MovieRatingsListTestCase(TestCase):
     def setUpTestData(cls) -> None:
         cls.factory = APIRequestFactory()
         cls.user = UserFactory()
-        cls.list_view = resolve(
+        cls.view = resolve(
             reverse("movie-ratings", kwargs={"user_id": cls.user.id})
         ).func
         cls.MovieRating = MovieRatingFactory
@@ -23,10 +23,7 @@ class MovieRatingsListTestCase(TestCase):
         request = self.factory.get(
             reverse("movie-ratings", kwargs={"user_id": self.user.id})
         )
-        # request = self.factory.get(
-        #     f"http://localhost:8002/api/v1/users/{self.user.id}/ratings/"
-        # )
-        response = self.list_view(request, user_id=self.user.id)
+        response = self.view(request, user_id=self.user.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("results", response.data)
         self.assertIn("count", response.data)
@@ -39,7 +36,7 @@ class MovieRatingsListTestCase(TestCase):
         request = self.factory.get(
             reverse("movie-ratings", kwargs={"user_id": self.user.id})
         )
-        response = self.list_view(request, user_id=self.user.id)
+        response = self.view(request, user_id=self.user.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 5)
 
@@ -53,10 +50,46 @@ class MovieRatingsListTestCase(TestCase):
             ),
         )
 
-    def test_get_rating_DNE_raises_NotFound(self):
+    def test_get_rating_DNE_returns_404(self):
         ratings = self.MovieRating.create_batch(5, user=self.user)
         request = self.factory.get(
             reverse("movie-ratings", kwargs={"user_id": self.user.id})
         )
-        response = self.list_view(request, user_id=self.user.id, pk="notaratingid")
+        response = self.view(request, user_id=self.user.id, pk="notaratingid")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # TODO: make this test work more intelligently
+    def test_get_rating_return_format(self):
+        ratings = self.MovieRating.create_batch(5, user=self.user)
+        request = self.factory.get(
+            reverse("movie-ratings", kwargs={"user_id": self.user.id})
+        )
+        response = self.view(request, user_id=self.user.id, pk=ratings[0].id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("movie", response.data)
+        self.assertIn("user", response.data)
+        self.assertIn("rating", response.data)
+        self.assertIn("rated_on", response.data)
+        self.assertIsInstance(response.data.get("movie"), dict)
+        self.assertIsInstance(response.data.get("user"), dict)
+
+    def test_create_movie_rating_success(self):
+        rating = self.MovieRating()
+        request = self.factory.post(
+            reverse(
+                "movie-ratings",
+                kwargs={"user_id": self.user.id},
+                data={
+                    "movie": rating.movie,
+                },
+            )
+        )
+        response = self.view(request, user_id=self.user.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_movie_requires_movie(self):
+        request = self.factory.post(
+            reverse("movie-ratings", kwargs={"user_id": self.user.id})
+        )
+        response = self.view(request, user_id=self.user.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

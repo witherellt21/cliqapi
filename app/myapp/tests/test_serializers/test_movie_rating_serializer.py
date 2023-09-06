@@ -40,5 +40,5 @@ class MovieRatingSerializerTestCase(TestCase):
         instance = serializer.save()
         self.assertEqual(instance.movie, movie)
         self.assertEqual(instance.user, user)
-        self.assertEqual(instance.rating, 8.1)
+        self.assertEqual(float(instance.rating), 8.1)
         self.assertNotEqual(instance.rated_on, None)

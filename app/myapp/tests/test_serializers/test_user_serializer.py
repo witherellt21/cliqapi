@@ -14,7 +14,7 @@ class UserCreationSerializerTestCase(TestCase):
         cls.User = User
         return super().setUpClass()
 
-    def test_user_serializer_default_id(self):
+    def test_user_serializer_default_id_is_int(self):
         data = {
             "username": TEST_USERNAME,
             "email": TEST_EMAIL_ADDRESS,
@@ -23,13 +23,10 @@ class UserCreationSerializerTestCase(TestCase):
         serializer = self.UserSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        self.assertIsInstance(str(user.id), str)
-        self.assertEqual(len(user.id), 32)
-        self.assertTrue(user.id.startswith("user_"))
+        self.assertIsInstance(user.id, int)
 
     def test_user_serializer_requires_email(self):
         data = {
-            "id": TEST_ID,
             "username": TEST_USERNAME,
             "password": TEST_PASSWORD,
         }
@@ -40,7 +37,6 @@ class UserCreationSerializerTestCase(TestCase):
 
     def test_user_serializer_requires_username(self):
         data = {
-            "id": TEST_ID,
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
         }
@@ -51,7 +47,6 @@ class UserCreationSerializerTestCase(TestCase):
 
     def test_user_serializer_requires_password(self):
         data = {
-            "id": TEST_ID,
             "username": TEST_USERNAME,
             "email": TEST_EMAIL_ADDRESS,
         }
@@ -63,7 +58,6 @@ class UserCreationSerializerTestCase(TestCase):
     def test_user_serializer_creation(self):
         # test that the serializer creates a user
         data = {
-            "id": TEST_ID,
             "username": TEST_USERNAME,
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
@@ -76,7 +70,6 @@ class UserCreationSerializerTestCase(TestCase):
         self.assertEqual(user.first_name, TEST_USER.get("first_name"))
         self.assertEqual(user.last_name, TEST_USER.get("last_name"))
         self.assertEqual(user.username, TEST_USER.get("username"))
-        self.assertEqual(user.id, TEST_USER.get("id"))
         self.assertEqual(user.email, TEST_USER.get("email"))
         self.assertEqual(
             user, self.User.objects.get(username=TEST_USER.get("username"))
@@ -84,7 +77,6 @@ class UserCreationSerializerTestCase(TestCase):
 
     def test_update_raises_attribute_error(self):
         data = {
-            "id": TEST_ID,
             "username": TEST_USERNAME,
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
@@ -143,12 +135,13 @@ class UserSerializerUpdateTestCase(TestCase):
         self.assertEqual(instance.email, "differentemail@domain.com")
 
     def test_change_id_not_allowed(self):
+        id_before_update = self.instance.id
         serializer = self.Serializer(
             instance=self.instance, data={"id": "user_987654321"}, partial=True
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        self.assertEqual(user.id, TEST_ID)
+        self.assertEqual(user.id, id_before_update)
 
     def test_change_password_not_allowed(self):
         serializer = self.Serializer(
@@ -156,13 +149,12 @@ class UserSerializerUpdateTestCase(TestCase):
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        self.assertEqual(user.id, TEST_ID)
+        self.assertNotEqual(user.password, "newpassword")
 
     def test_username_already_exists_raises_ValidationError(self):
         # create new user with the same username as self.instance
         new_data = {
             "username": TEST_USERNAME,
-            "id": "user_987654321",
             "email": "differentemail@domain.com",
         }
         serializer = self.CreationSerializer(data=new_data, partial=True)
@@ -175,17 +167,6 @@ class UserSerializerUpdateTestCase(TestCase):
             "username": "different_username",
             "id": "user_987654321",
             "email": TEST_EMAIL_ADDRESS,
-        }
-        serializer = self.CreationSerializer(data=new_data, partial=True)
-        self.assertRaises(
-            ValidationError, lambda: serializer.is_valid(raise_exception=True)
-        )
-
-    def test_id_already_exists_raises_ValidationError(self):
-        new_data = {
-            "username": "different_username",
-            "id": TEST_ID,
-            "email": "differentemail@domain.com",
         }
         serializer = self.CreationSerializer(data=new_data, partial=True)
         self.assertRaises(

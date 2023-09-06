@@ -3,6 +3,7 @@ import traceback
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
+from django.http import Http404
 
 from rest_framework import generics, mixins, status, exceptions
 from rest_framework.response import Response
@@ -52,6 +53,9 @@ class UserCreateAPIView(
 
             return self.create(request, *args, **kwargs)
 
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
         # TODO: probably don't need this
         except exceptions.APIException as api_error:
             return generate_error_response(
@@ -95,6 +99,9 @@ class MovieRatingAPIView(
 
             return Response(data=payload, status=status.HTTP_200_OK)
 
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
         except exceptions.APIException as api_error:
             return generate_error_response(
                 str(api_error),
@@ -114,6 +121,10 @@ class MovieRatingAPIView(
     def delete(self, request, user_id, *args, **kwargs):
         try:
             return self.destroy(request, *args, **kwargs)
+
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
         except exceptions.APIException as api_error:
             return generate_error_response(
                 str(api_error),

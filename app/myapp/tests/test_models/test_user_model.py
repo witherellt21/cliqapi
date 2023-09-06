@@ -17,12 +17,6 @@ class UserModelCreateTestCase(TestCase):
         cls.User = get_user_model()
         return super().setUpClass()
 
-    @pytest.mark.db_check
-    def test_view_db_users(self):
-        # print out all users in db
-        print(f"All users: {self.User.objects.all()}")
-        print(f"Superusers: {self.User.objects.filter(is_superuser=True)}")
-
     def test_create_user_requires_email(self):
         self.assertRaises(
             TypeError,

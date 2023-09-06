@@ -4,15 +4,18 @@ from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, mixins, status, exceptions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.viewsets import ModelViewSet
 
 from app.utils.http_utils import generate_error_response
 
 from .models import MovieRating
 from .serializers import UserCreationSerializer, MovieRatingSerializer
+from .exceptions import InvalidRequestParameters
 
 import logging
 
@@ -20,7 +23,9 @@ logger = logging.getLogger("main")
 
 
 class UserCreateAPIView(
-    mixins.CreateModelMixin, mixins.RetrieveModelMixin, generics.GenericAPIView
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
 ):
     queryset = get_user_model().objects.all()
     serializer_class = UserCreationSerializer
@@ -71,32 +76,22 @@ class UserCreateAPIView(
             )
 
 
-class MovieRatingAPIView(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-):
+class MovieRatingListAPIView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = MovieRating.objects.all()
     serializer_class = MovieRatingSerializer
     lookup_field = "pk"
 
-    def get_object(self):
-        return super().get_object()
-
     def get(self, request, user_id, *args, **kwargs):
         try:
             self.queryset = self.queryset.filter(user__id=user_id)
+            response = self.list(request, *args, **kwargs)
 
-            if kwargs.get("pk", None):
-                return self.retrieve(request, *args, **kwargs)
-
-            payload = {
+            response.data = {
                 "results": self.get_serializer(self.queryset, many=True).data,
                 "count": self.queryset.count(),
             }
 
+            return response
             return Response(data=payload, status=status.HTTP_200_OK)
 
         except Http404 as e404:
@@ -115,12 +110,93 @@ class MovieRatingAPIView(
                 long_message=traceback.format_exc(),
             )
 
-    def post(self, request, user_id, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
-    def delete(self, request, user_id, *args, **kwargs):
+class MovieRatingAPIView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = MovieRating.objects.all()
+    serializer_class = MovieRatingSerializer
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
         try:
-            return self.destroy(request, *args, **kwargs)
+            if kwargs.get("pk"):
+                return self.retrieve(request, *args, **kwargs)
+            return self.list(request, *args, **kwargs)
+
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
+        except exceptions.APIException as api_error:
+            return generate_error_response(
+                str(api_error),
+                status=api_error.status_code,
+                long_message=traceback.format_exc(),
+            )
+        except Exception as e:
+            return generate_error_response(
+                str(e),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                long_message=traceback.format_exc(),
+            )
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
+        except exceptions.APIException as api_error:
+            return generate_error_response(
+                str(api_error),
+                status=api_error.status_code,
+                long_message=traceback.format_exc(),
+            )
+        except Exception as e:
+            return generate_error_response(
+                str(e),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                long_message=traceback.format_exc(),
+            )
+
+    def patch(self, request, pk, *args, **kwargs):
+        try:
+            # TODO: In the future we create roles
+            # role = getattr(request, "_auth", {}).get("role")
+            # if role == :
+
+            if any(x in request.data for x in ["movie", "user"]):
+                raise exceptions.PermissionDenied(
+                    "Cannot update a movie rating's movie or user field."
+                )
+
+            # For now, we will just use is_admin attribute
+            return self.update(request, pk=pk, partial=True, *args, **kwargs)
+
+        except Http404 as e404:
+            raise exceptions.NotFound(str(e404))
+
+        except exceptions.APIException as api_error:
+            return generate_error_response(
+                str(api_error),
+                status=api_error.status_code,
+                long_message=traceback.format_exc(),
+            )
+        except Exception as e:
+            return generate_error_response(
+                str(e),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                long_message=traceback.format_exc(),
+            )
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            return self.destroy(request, pk=pk, *args, **kwargs)
 
         except Http404 as e404:
             raise exceptions.NotFound(str(e404))

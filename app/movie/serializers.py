@@ -5,4 +5,4 @@ from .models import Movie
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        exclude = ("id",)
+        fields = "__all__"

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.utils.translation import gettext as _
 
+from app.movie.serializers import MovieSerializer
+
 from .models import User, MovieRating
 
 
@@ -29,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # fields = "__all__"
-        exclude = ("password", "id")
+        exclude = ("password",)
 
         # These fields are displayed but not editable and have to be a part of 'fields' tuple
         read_only_fields = (
@@ -48,6 +50,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MovieRatingSerializer(serializers.ModelSerializer):
+    def to_representation(self, obj):
+        self.fields["movie"] = MovieSerializer()
+        self.fields["user"] = UserSerializer()
+        return super().to_representation(obj)
+
     class Meta:
         model = MovieRating
-        exclude = ("id",)
+        fields = "__all__"

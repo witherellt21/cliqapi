@@ -2,16 +2,15 @@ from django.test import TestCase
 
 from rest_framework.exceptions import ValidationError
 
-from ..constants import *
+from ..constants import TEST_USERNAME, TEST_EMAIL_ADDRESS, TEST_PASSWORD, TEST_USER
 from ...serializers import UserSerializer, UserCreationSerializer
-from ...models import User
 
 
 class UserCreationSerializerTestCase(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.UserSerializer = UserCreationSerializer
-        cls.User = User
+        cls.Serializer = UserCreationSerializer
+        cls.User = cls.Serializer.Meta.model
         return super().setUpClass()
 
     def test_user_serializer_default_id_is_int(self):
@@ -20,7 +19,7 @@ class UserCreationSerializerTestCase(TestCase):
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         self.assertIsInstance(user.id, int)
@@ -30,7 +29,7 @@ class UserCreationSerializerTestCase(TestCase):
             "username": TEST_USERNAME,
             "password": TEST_PASSWORD,
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
@@ -40,7 +39,7 @@ class UserCreationSerializerTestCase(TestCase):
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
@@ -50,7 +49,7 @@ class UserCreationSerializerTestCase(TestCase):
             "username": TEST_USERNAME,
             "email": TEST_EMAIL_ADDRESS,
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         self.assertRaises(
             ValidationError, lambda: serializer.is_valid(raise_exception=True)
         )
@@ -64,7 +63,7 @@ class UserCreationSerializerTestCase(TestCase):
             "first_name": TEST_USER.get("first_name"),
             "last_name": TEST_USER.get("last_name"),
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         self.assertEqual(user.first_name, TEST_USER.get("first_name"))
@@ -81,11 +80,11 @@ class UserCreationSerializerTestCase(TestCase):
             "email": TEST_EMAIL_ADDRESS,
             "password": TEST_PASSWORD,
         }
-        serializer = self.UserSerializer(data=data)
+        serializer = self.Serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        serializer = self.UserSerializer(instance=user, data=data, partial=True)
+        serializer = self.Serializer(instance=user, data=data, partial=True)
         serializer.is_valid()
         self.assertRaises(AttributeError, lambda: serializer.save())
 
@@ -95,7 +94,7 @@ class UserSerializerUpdateTestCase(TestCase):
     def setUpClass(cls) -> None:
         cls.CreationSerializer = UserCreationSerializer
         cls.Serializer = UserSerializer
-        cls.UserModel = User
+        cls.UserModel = cls.Serializer.Meta.model
         return super().setUpClass()
 
     @classmethod

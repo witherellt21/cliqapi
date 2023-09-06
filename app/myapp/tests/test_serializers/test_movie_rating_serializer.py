@@ -2,16 +2,15 @@ from django.test import TestCase
 from rest_framework.exceptions import ValidationError
 
 from ...serializers import MovieRatingSerializer
-from ..factories import UserFactory, movie_ratings
+from ..factories import UserFactory, MovieRatingFactory
 
 
 class MovieRatingSerializerTestCase(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.Serializer = MovieRatingSerializer
-        cls.instance = movie_ratings.MovieRatingFactory()
-        cls.Movie = movie_ratings.MovieFactory
-        cls.User = UserFactory
+        cls.instance = MovieRatingFactory()
+        cls.UserFactory = UserFactory
 
     def test_invalid_rating_raises_ValidationError(self):
         serializer = self.Serializer(
@@ -32,7 +31,7 @@ class MovieRatingSerializerTestCase(TestCase):
 
     def test_create_with_serializer(self):
         movie = self.Movie()
-        user = self.User()
+        user = self.UserFactory()
         serializer = self.Serializer(
             data={"movie": movie.id, "user": user.id, "rating": 8.1}
         )

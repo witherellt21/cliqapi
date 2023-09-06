@@ -4,18 +4,14 @@ from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, mixins, status, exceptions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.viewsets import ModelViewSet
 
 from app.utils.http_utils import generate_error_response
 
 from .models import MovieRating
 from .serializers import UserCreationSerializer, MovieRatingSerializer
-from .exceptions import InvalidRequestParameters
 
 import logging
 

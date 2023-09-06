@@ -1,12 +1,10 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, resolve
 
-from rest_framework import exceptions
+from rest_framework import exceptions, status
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 from ..constants import TEST_EMAIL_ADDRESS, TEST_PASSWORD, TEST_USERNAME
-from ...views import *
-from ...models import User
 
 AUTHENTICATION_CREDENTIALS = {
     "token": {"username": TEST_USERNAME, "email": TEST_EMAIL_ADDRESS},
@@ -17,8 +15,7 @@ class UserCreateViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.factory = APIRequestFactory()
-        cls.view = UserCreateAPIView.as_view()
-        cls.User = User
+        cls.view = resolve(reverse("user-create")).func
 
     def test_view_url_exists(self):
         request = self.factory.post(reverse("user-create"))

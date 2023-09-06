@@ -1,11 +1,10 @@
 from django.test import TestCase
-from django.urls import reverse, resolve, NoReverseMatch
+from django.urls import reverse, resolve
 
 from rest_framework.test import APIRequestFactory
 from rest_framework import status
 
-from ..factories import MovieRatingFactory
-from ..factories import UserFactory
+from ..factories import MovieRatingFactory, UserFactory
 
 
 class MovieRatingsViewTestCase(TestCase):
@@ -14,7 +13,8 @@ class MovieRatingsViewTestCase(TestCase):
         cls.factory = APIRequestFactory()
         cls.user = UserFactory()
         cls.view = resolve(reverse("movie-ratings")).func
-        cls.MovieRating = MovieRatingFactory
+        cls.MovieRatingFactory = MovieRatingFactory
+        cls.MovieRating = cls.MovieRatingFactory._meta.model
 
     def test_list_view_exists(self):
         request = self.factory.get(reverse("movie-ratings"))
@@ -23,7 +23,7 @@ class MovieRatingsViewTestCase(TestCase):
         self.assertNotEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_get_view_exists(self):
-        rating = self.MovieRating(user=self.user)
+        rating = self.MovieRatingFactory(user=self.user)
         request = self.factory.get(reverse("movie-rating", kwargs={"pk": rating.id}))
         response = self.view(request, pk=rating.id)
         self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -36,7 +36,7 @@ class MovieRatingsViewTestCase(TestCase):
         self.assertNotEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_patch_view_exists(self):
-        rating = self.MovieRating(user=self.user)
+        rating = self.MovieRatingFactory(user=self.user)
         request = self.factory.patch(reverse("movie-rating", kwargs={"pk": rating.id}))
         response = self.view(request, pk=rating.id)
         self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -61,14 +61,14 @@ class MovieRatingsViewTestCase(TestCase):
     #     self.assertEqual(response.data["count"], 5)
 
     def test_get_DNE_returns_404(self):
-        rating = self.MovieRating(user=self.user)
+        rating = self.MovieRatingFactory(user=self.user)
         request = self.factory.get(reverse("movie-rating", kwargs={"pk": rating.id}))
         response = self.view(request, pk="notaratingid")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # TODO: make this test work more intelligently
     def test_get_return_format(self):
-        rating = self.MovieRating(user=self.user)
+        rating = self.MovieRatingFactory(user=self.user)
         request = self.factory.get(reverse("movie-rating", kwargs={"pk": rating.id}))
         response = self.view(request, pk=rating.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -81,7 +81,7 @@ class MovieRatingsViewTestCase(TestCase):
 
     def test_post_success(self):
         # create a movie rating to recursively create a movie
-        movie = self.MovieRating().movie
+        movie = self.MovieRatingFactory().movie
 
         # create a new movie rating with shared details but a new rating
         request = self.factory.post(
@@ -111,7 +111,7 @@ class MovieRatingsViewTestCase(TestCase):
 
     def test_post_requires_rating(self):
         # create a movie rating to recursively create a movie
-        movie = self.MovieRating(rating=8.2).movie
+        movie = self.MovieRatingFactory(rating=8.2).movie
 
         # raises Validation error because no rating was contained in the request
         request = self.factory.post(
@@ -124,7 +124,7 @@ class MovieRatingsViewTestCase(TestCase):
 
     def test_patch_data_empty(self):
         # create a movie rating to recursively create a user and movie
-        rating = self.MovieRating(rating=8.2)
+        rating = self.MovieRatingFactory(rating=8.2)
 
         # raises Validation error because no rating was contained in the request
         request = self.factory.patch(
@@ -137,7 +137,7 @@ class MovieRatingsViewTestCase(TestCase):
 
     def test_patch_success(self):
         # create a movie rating to recursively create a user and movie
-        rating = self.MovieRating(rating=8.2)
+        rating = self.MovieRatingFactory(rating=8.2)
 
         # raises Validation error because no rating was contained in the request
         request = self.factory.patch(
@@ -151,9 +151,9 @@ class MovieRatingsViewTestCase(TestCase):
 
     def test_patch_cannot_change_movie(self):
         # create a movie rating to recursively create a user and movie
-        rating = self.MovieRating(rating=8.2)
+        rating = self.MovieRatingFactory(rating=8.2)
         original_movie = rating.movie
-        another_movie = self.MovieRating().movie
+        another_movie = self.MovieRatingFactory().movie
 
         # raises Validation error because no rating was contained in the request
         request = self.factory.patch(
@@ -176,7 +176,31 @@ class MovieRatingsViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_success(self):
-        pass
+        mr_id = MovieRatingFactory().id
+        # raises Validation error because no rating was contained in the request
+        request = self.factory.delete(
+            reverse("movie-rating", kwargs={"pk": mr_id}),
+            data={},
+            format="json",
+        )
+        response = self.view(request, pk=mr_id)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertRaises(
+            self.MovieRating.DoesNotExist,
+            lambda: self.MovieRating.objects.get(pk=mr_id),
+        )
 
     def test_delete_DNE_returns_404(self):
-        pass
+        mr_id = MovieRatingFactory().id
+        # raises Validation error because no rating was contained in the request
+        request = self.factory.delete(
+            reverse("movie-rating", kwargs={"pk": mr_id}),
+            data={},
+            format="json",
+        )
+        response = self.view(request, pk="notarating")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertRaises(
+            self.MovieRating.DoesNotExist,
+            lambda: self.MovieRating.objects.get(pk=mr_id),
+        )

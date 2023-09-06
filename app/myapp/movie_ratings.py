@@ -1,11 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# from app.settings import AUTH_USER_MODEL
-from django.contrib.auth import get_user_model
 from app import settings
-
 from app.movie.models import Movie
+
 from .user import User
 
 

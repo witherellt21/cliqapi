@@ -1,6 +1,7 @@
 import factory
 from faker import Faker
 from random import uniform
+
 from app.movie.tests.factories import MovieFactory
 
 from ..factories import UserFactory

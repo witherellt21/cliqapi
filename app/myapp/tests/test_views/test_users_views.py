@@ -21,7 +21,7 @@ class UserCreateViewTestCase(TestCase):
         request = self.factory.post(reverse("user-create"))
         force_authenticate(request)
         response = self.view(request)
-        self.assertNotEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_user_unauthenticated_requires_email(self):
         request = self.factory.post(

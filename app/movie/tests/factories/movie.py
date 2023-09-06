@@ -2,7 +2,7 @@ import factory
 from faker import Faker
 from random import sample, randint
 
-from app.options import StreamingService, Genre
+from ...options import StreamingService, Genre
 from ...models import Movie
 
 fake = Faker()

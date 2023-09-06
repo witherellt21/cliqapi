@@ -7,15 +7,29 @@ from django.http import Http404
 
 from rest_framework import generics, mixins, status, exceptions
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from app.utils.http_utils import generate_error_response
 
 from .models import MovieRating
 from .serializers import UserCreationSerializer, MovieRatingSerializer
+from . import options
 
 import logging
 
 logger = logging.getLogger("main")
+
+
+@api_view(["GET"])
+def get_options_configuration(request, *args, **kwargs):
+    try:
+        return Response(data=options.CONFIGURATION, status=status.HTTP_200_OK)
+    except Exception as unexpected_error:
+        return generate_error_response(
+            str(unexpected_error),
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            long_message=traceback.format_exc(),
+        )
 
 
 class UserCreateAPIView(

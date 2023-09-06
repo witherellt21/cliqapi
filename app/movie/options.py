@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Genre(models.TextChoices):
-    COMEDY = _("Comedy")
+    COMEDY = _("Funny")
     ROMANCE = _("Romance")
     THRILLER = _("Thriller")
     DRAMA = _("Drama")
